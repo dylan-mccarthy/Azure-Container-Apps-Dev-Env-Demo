@@ -31,6 +31,9 @@ jobs:
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -62,4 +65,4 @@ jobs:
             az extension add --name containerapp-compose --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            az containerapp compose create --environment ${{ github.actor }}-${{ steps.uuid-create.outputs.uuid }} --resource-group ${{ env.ACA_RG }} --compose-file-path docker-compose.yml --location ${{ env.AZ_LOCATION }}
+            az containerapp compose create --environment ${{ github.actor }}-${{ steps.uuid-create.outputs.uuid }} --resource-group ${{ env.ACA_RG }} --compose-file-path ./docker-compose.yml --location ${{ env.AZ_LOCATION }}
