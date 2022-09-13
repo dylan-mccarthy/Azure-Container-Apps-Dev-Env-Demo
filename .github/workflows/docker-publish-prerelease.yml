@@ -1,4 +1,4 @@
-name: Docker
+name: PR-Deploy
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -6,23 +6,36 @@ name: Docker
 # documentation.
 
 on:
-  push:
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "main" ]
 
 env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  OWNER: ${{ github.repository }}
   IMAGE_NAME: weatherapi
-  IMAGE_TAG: ${{ github.event.number }}
-  ACA_RG: rg-aca-dev-env-pr-${{ github.event.number }}
+  IMAGE_TAG: PR-${{ github.event.number }}
+  ACA_RG: rg-aca-dev-env
   AZ_LOCATION: australiaeast
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+      - name: 'Build and Push image'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGITRSY_PASSWORD }}
+        run: |
+          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
   deploy:
     runs-on: ubuntu-latest
     permissions:
@@ -38,31 +51,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID}}
-      - name: Generate Unique Id
-        id: uuid-create
-        run: |
-          echo "::set-output name=uuid::$(uuidgen)"
-      - name: Create Resource Group
-        id: create-rg
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.40.0
-          inlinescript: |
-            az group create --name $ACA_RG --location $AZ_LOCATION
-
-      - name: Create Container Apps Environment
-        id: aca-env-create
-        uses: azure/CLI@v1
-        with: 
-         azcliversion: 2.40.0
-         inlinescript: |
-            az extension add --name containerapp --upgrade
-            az provider register --namespace Microsoft.App
-            az provider register --namespace Microsoft.OperationalInsights
-            az containerapp env create --name ${{ github.actor }}-${{ steps.uuid-create.outputs.uuid }} --resource-group ${{ env.ACA_RG }} --location ${{ env.AZ_LOCATION }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Container Apps Environment
         id: aca-deploy
@@ -71,7 +60,7 @@ jobs:
           azcliversion: 2.40.0
           inlinescript: |
             az extension add --name containerapp --upgrade
-            az extension add --name containerapp-compose --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            az containerapp compose create --environment ${{ github.actor }}-${{ steps.uuid-create.outputs.uuid }} --resource-group ${{ env.ACA_RG }} --compose-file-path ./docker-compose.yml --location ${{ env.AZ_LOCATION }}
+            az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGITRSY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }}
+            
