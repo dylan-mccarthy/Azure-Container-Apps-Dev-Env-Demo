@@ -62,4 +62,4 @@ jobs:
             az extension add --name containerapp-compose --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            az containerapp compose create --environment ${{ github.actor }}-${{ steps.uuid-create.outputs.uuid }} --resource-group ${{ env.ACA_RG }} --compose-file-path ./docker-compose.yml --location ${{ env.AZ_LOCATION }}
+            az containerapp compose create --environment ${{ github.actor }}-${{ steps.uuid-create.outputs.uuid }} --resource-group ${{ env.ACA_RG }} --compose-file-path docker-compose.yml --location ${{ env.AZ_LOCATION }}
