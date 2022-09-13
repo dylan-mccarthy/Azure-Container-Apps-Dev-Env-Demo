@@ -64,4 +64,17 @@ jobs:
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
             az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }}
-            
+            url=$(az containerapp revision show -n ${{ env.IMAGE_NAME }} -g ${{ env.ACA_RG }} --revision ${{ env.IMAGE_NAME }}}--${{ env.IMAGE_NAME }} --query "properties.fqdn" -otsv)
+            echo "::set-output name=url::$url"
+      - name: Add Url to PR
+        id: add-pr-comment
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+              body: 'URL: ${{ steps.aca-deploy.outputs.url }}'
+            })
