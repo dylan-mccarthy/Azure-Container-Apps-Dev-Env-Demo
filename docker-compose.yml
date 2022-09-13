@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   weatherapi:
-    image: weatherapi
     hostname: weatherapi
     build:
       context: .

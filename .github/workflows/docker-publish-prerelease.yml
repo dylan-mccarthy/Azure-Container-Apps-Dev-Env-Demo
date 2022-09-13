@@ -18,7 +18,8 @@ env:
   # github.repository as <account>/<repo>
   OWNER: ${{ github.repository }}
   IMAGE_NAME: weatherapi
-  ACA_RG: rg-aca-dev-env
+  IMAGE_TAG: ${{ github.event.number }}
+  ACA_RG: rg-aca-dev-env-pr-${{ github.event.number }}
   AZ_LOCATION: australiaeast
 
 jobs:
@@ -44,6 +45,14 @@ jobs:
         id: uuid-create
         run: |
           echo "::set-output name=uuid::$(uuidgen)"
+      - name: Create Resource Group
+        id: create-rg
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.40.0
+          inlinescript: |
+            az group create --name $ACA_RG --location $AZ_LOCATION
+
       - name: Create Container Apps Environment
         id: aca-env-create
         uses: azure/CLI@v1
