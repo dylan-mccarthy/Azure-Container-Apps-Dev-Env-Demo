@@ -16,7 +16,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  REG_OWNER: ${{ github.repository }}
+  OWNER: ${{ github.repository }}
   IMAGE_NAME: weatherapi
   ACA_RG: rg-aca-dev-env
   AZ_LOCATION: australiaeast
