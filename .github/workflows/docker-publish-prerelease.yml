@@ -18,6 +18,7 @@ env:
   # github.repository as <account>/<repo>
   OWNER: ${{ github.repository }}
   IMAGE_NAME: weatherapi
+  IMAGE_TAG: ${{ github.event.number }}
   ACA_RG: rg-aca-dev-env
   AZ_LOCATION: australiaeast
 
