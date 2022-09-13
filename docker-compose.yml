@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   weatherapi:
-    image: ${IMAGE_NAME}:${IMAGE_TAG}
     hostname: weatherapi
     build:
       context: .
