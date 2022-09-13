@@ -65,7 +65,6 @@ jobs:
             az provider register --namespace Microsoft.OperationalInsights
             az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }}
             az containerapp revision show -n ${{ env.IMAGE_NAME }} -g ${{ env.ACA_RG }} --revision ${{ env.IMAGE_NAME }}}--${{ env.IMAGE_NAME }} --query "properties.fqdn" -o tsv
-            echo "::set-output name=url::'Testing'"
       - name: Add Url to PR
         id: add-pr-comment
         uses: actions/github-script@v5
@@ -76,5 +75,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo
-              body: 'URL: ${{ steps.aca-deploy.outputs.url }}'
+              body: 'URL: tbc'
             })
