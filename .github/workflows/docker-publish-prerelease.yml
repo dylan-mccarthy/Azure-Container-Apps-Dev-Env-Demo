@@ -11,7 +11,7 @@ on:
 
 env:
   IMAGE_NAME: weatherapi
-  IMAGE_TAG: PR-${{ github.event.number }}
+  IMAGE_TAG: pr-${{ github.event.number }}
   ACA_RG: rg-aca-dev-env
   AZ_LOCATION: australiaeast
 
