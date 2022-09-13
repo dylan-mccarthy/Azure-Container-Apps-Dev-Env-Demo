@@ -59,6 +59,7 @@ jobs:
           azcliversion: 2.40.0
           inlinescript: |
             az extension add --name containerapp --upgrade
+            az extension add --name containerapp-compose --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
             az containerapp compose create --environment --name ${{ github.actor }}-${{ steps.uuid-create.outputs.uuid }} --resource-group ${{ env.ACA_RG }} --compose-file-path ./docker-compose.yml --location ${{ env.AZ_LOCATION }}
