@@ -64,7 +64,7 @@ jobs:
             az extension add --name containerapp --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            echo "::set-output name=testurl::$(az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }} --query "properties.latestRevisionFqdn" -o tsv)
+            echo "::set-output name=testurl::$(az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }} --query "properties.latestRevisionFqdn" -o tsv)"
       - name: Add Url to PR
         id: add-pr-comment
         uses: peter-evans/create-or-update-comment@v2
