@@ -64,7 +64,8 @@ jobs:
             az extension add --name containerapp --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            echo "testurl=$(az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }} --query "properties.latestRevisionFqdn" -o tsv)" >> $GITHUB_ENV
+            url=az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }} --query "properties.latestRevisionFqdn" -o tsv
+            echo "testurl=$url" >> $GITHUB_ENV
       - name: Test output
         run: |
           echo ${{ env.testurl }}
