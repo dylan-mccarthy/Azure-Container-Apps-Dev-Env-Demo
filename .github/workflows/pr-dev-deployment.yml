@@ -8,7 +8,7 @@ name: Pull Request Dev Deployment
 on:
   pull_request:
     branches: [ "main" ]
-    types: ["opened", "edited","reopened"]
+    types: ["opened", "edited","reopened", "synchronize"]
 
 env:
   IMAGE_NAME: weatherapi
