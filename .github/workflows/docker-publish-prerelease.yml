@@ -63,7 +63,7 @@ jobs:
             az extension add --name containerapp --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }} --query "properties.latestRevisionFqdn" -o tsv
+            url=$(az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }} --query "properties.latestRevisionFqdn" -o tsv)
       - name: Add Url to PR
         id: add-pr-comment
         uses: actions/github-script@v5
@@ -73,6 +73,6 @@ jobs:
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: context.repo.repo
+              repo: context.repo.repo,
               body: 'URL: tbc'
             })
