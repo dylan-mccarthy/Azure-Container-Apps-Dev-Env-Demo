@@ -1,0 +1,31 @@
+name: Pull Request Dev Cleanup
+
+on:
+  pull_request:
+    branches: ["main"]
+    types: ["closed"]
+
+env:
+  IMAGE_NAME: weatherapi
+  IMAGE_TAG: pr-${{ github.event.number }}
+  ACA_RG: rg-aca-dev-env
+  AZ_LOCATION: australiaeast
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deactivate App revision
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.40.0
+          inlinescript: |
+            az extension add --name containerapp --upgrade
+            az provider register --namespace Microsoft.App
+            az provider register --namespace Microsoft.OperationalInsights
+            az containerapp revision deactivate -g ${{ env.ACA_RG }} --revision ${{ env.IMAGE_NAME }}--${{ env.IMAGE_TAG }}      
+

@@ -1,4 +1,4 @@
-name: PR-Deploy
+name: Prod Deployment
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -6,12 +6,16 @@ name: PR-Deploy
 # documentation.
 
 on:
-  pull_request:
+  push:
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+    branches: [ "main" ]
+  workflow_dispatch:
     branches: [ "main" ]
 
 env:
   IMAGE_NAME: weatherapi
-  IMAGE_TAG: pr-${{ github.event.number }}
+  IMAGE_TAG: ${{ github.run_number }}
   ACA_RG: rg-aca-dev-env
   AZ_LOCATION: australiaeast
 
@@ -42,7 +46,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      pull-requests: write
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
@@ -64,16 +67,5 @@ jobs:
             az extension add --name containerapp --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }}
-            url=$(az containerapp revision show -n ${{ env.IMAGE_NAME }} -g ${{ env.ACA_RG }} --revision ${{ env.IMAGE_NAME }}--${{ env.IMAGE_TAG}} --query "properties.fqdn" -o tsv)
-            echo "testurl=$url" >> $GITHUB_ENV
-      - name: Test output
-        run: |
-          echo ${{ env.testurl }}
-      - name: Add Url to PR
-        id: add-pr-comment
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Url for this PR is: ${{ env.testurl }}
+            az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image  ${{ secrets.REGITRSY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            
