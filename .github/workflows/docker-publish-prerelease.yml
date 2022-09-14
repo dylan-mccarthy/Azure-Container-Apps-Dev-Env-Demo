@@ -65,11 +65,11 @@ jobs:
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
             url=$(az containerapp update --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --revision-suffix ${{ env.IMAGE_TAG }} --query "properties.latestRevisionFqdn" -o tsv)
-            echo "::set-output name=url::$url"
+            echo "::set-output name=test_url::$url"
       - name: Add Url to PR
         id: add-pr-comment
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            Url for this PR is: ${{ steps.aca-deploy.outputs.url }}
+            Url for this PR is: ${{ steps.aca-deploy.outputs.test_url }}
