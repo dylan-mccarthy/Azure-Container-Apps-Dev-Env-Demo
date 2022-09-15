@@ -1,4 +1,4 @@
-name: Pull Request Dev Cleanup
+name: Cleanup
 
 on:
   pull_request:
