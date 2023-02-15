@@ -14,6 +14,7 @@ env:
   IMAGE_TAG: ${{ github.run_number }}
   ACA_RG: rg-aca-dev-env
   AZ_LOCATION: australiaeast
+  ACA_ENV_NAME: aca-dev-env-test
 
 jobs:
   build:
@@ -63,5 +64,6 @@ jobs:
             az extension add --name containerapp --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            az containerapp create --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            az containerapp env create --resource-group ${{ env.ACA_RG }} --name ${{ ACA_ENV_NAME }} --location ${{ AZ_LOCATION }}
+            az containerapp create --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --environment ${{ env.ACA_ENV_NAME }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             
