@@ -64,6 +64,6 @@ jobs:
             az extension add --name containerapp --upgrade
             az provider register --namespace Microsoft.App
             az provider register --namespace Microsoft.OperationalInsights
-            az containerapp env create --resource-group ${{ env.ACA_RG }} --name ${{ ACA_ENV_NAME }} --location ${{ AZ_LOCATION }}
+            az containerapp env create --resource-group ${{ env.ACA_RG }} --name ${{ env.ACA_ENV_NAME }} --location ${{ env.AZ_LOCATION }}
             az containerapp create --name ${{ env.IMAGE_NAME }} --resource-group ${{ env.ACA_RG }} --environment ${{ env.ACA_ENV_NAME }} --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             
